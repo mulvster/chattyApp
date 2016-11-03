@@ -2,21 +2,12 @@ import React, {Component} from 'react';
 import MessageList from "./MessageList.jsx";
 import ChatBar from "./ChatBar.jsx";
 
+var uuid = require('uuid');
+
 
 let data = {
   currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
-  messages: [
-    {
-      id: 1,
-      username: "Bob",
-      content: "Has anyone seen my marbles?",
-    },
-    {
-      id: 2,
-      username: "Anonymous",
-      content: "No, I think you lost them. You lost your marbles Bob. You lost them for good."
-    }
-  ]
+  messages: []
 };
 
 
@@ -37,7 +28,8 @@ class App extends Component {
     this.socket.onmessage = (message) => {
       console.log(message);
       const data = JSON.parse(message.data);
-      console.log('Message for ws:', data);
+      const  messages = this.state.messages.concat(data);
+      this.setState({messages: messages});
     }
   }
 
@@ -47,12 +39,12 @@ class App extends Component {
   }
 
   addMessage(message) {
+
     let content = message;
     let username = this.state.currentUser.name;
-    let id = Math.floor( Math.random() * 1000 );
 
     // make a new message object
-    let newMessage = {id, username, content};
+    let newMessage = {id: uuid.v1(), username: message.user, content: message.message};
     let newMessages = this.state.messages.concat(newMessage);
 
     // make the new state ( because it needs to include the new message )
@@ -66,7 +58,7 @@ class App extends Component {
     this.socket.send(JSON.stringify(newMessage));
 
   }
-
+s
   render() {
     return (
       <div className="wrapper">
