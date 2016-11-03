@@ -30,9 +30,8 @@ wss.on('connection', (ws) => {
 
   wss.broadcast({
     type: 'userCount',
-    data: {
       usersOnline: usersOnline
-    }
+
 });
 
   ws.on('message', message => {
@@ -54,9 +53,7 @@ wss.on('connection', (ws) => {
     usersOnline -= 1;
     wss.broadcast({
       type: 'userCount',
-      data: {
         usersOnline: usersOnline
-      }
     });
   });
 });

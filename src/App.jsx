@@ -7,7 +7,8 @@ const uuid = require('uuid');
 
 let data = {
   currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
-  messages: []
+  messages: [],
+  usersOnline: 0
 };
 
 
@@ -26,10 +27,16 @@ class App extends Component {
     this.socket.onmessage = (message) => {
       console.log(message);
       const data = JSON.parse(message.data);
-      data.type = "incoming message";
-      const messages = this.state.messages.concat(data);
-      console.log(messages);
-      this.setState({messages: messages});
+      if(data.type === "userCount") {
+        this.setState({usersOnline: data.usersOnline});
+      } else {
+        data.type = "incoming message";
+
+        const messages = this.state.messages.concat(data);
+        console.log(messages);
+        this.setState({messages: messages});
+      }
+
 
     }
   }
@@ -71,6 +78,7 @@ class App extends Component {
       <div className="wrapper">
         <nav>
           <h1>Chatty</h1>
+          <h3>usersOnline={this.state.usersOnline}</h3>
         </nav>
 
         <MessageList
