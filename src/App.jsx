@@ -34,7 +34,7 @@ class App extends Component {
       //Set state connected = true
     }
 
-    this.socket.onmessage = message => {
+    this.socket.onmessage = (message) => {
       console.log(message);
       const data = JSON.parse(message.data);
       console.log('Message for ws:', data);
@@ -63,6 +63,8 @@ class App extends Component {
     };
 
     this.setState( newState );
+    this.socket.send(JSON.stringify(newMessage));
+
   }
 
   render() {
