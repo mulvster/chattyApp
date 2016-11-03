@@ -20,9 +20,7 @@ class App extends Component {
   componentDidMount() {
     this.socket = new WebSocket("ws://localhost:4000");
     this.socket.onopen = () => {
- 
 
-      //Set state connected = true
     }
 
     this.socket.onmessage = (message) => {
@@ -55,7 +53,6 @@ class App extends Component {
       messages: newMessages
     };
 
-    this.setState( newState );
     this.socket.send(JSON.stringify(newMessage));
 
   }
