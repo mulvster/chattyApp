@@ -60,29 +60,11 @@ class App extends Component {
         content: message.message,
         type: "postMessage"
       };
+      this.state.currentUser.name = message.user;
       this.socket.send(JSON.stringify(changeNameNotification));
       this.socket.send(JSON.stringify(userMessage));
     }
   }
-
-
-  //   let content = message;
-  //   let username = this.state.currentUser.name;
-  //
-  //   // make a new message object
-  //   let newMessage = {id: uuid.v1(), username: message.user, content: message.message, type: 'postMessage'};
-  //   let newMessages = this.state.messages.concat(newMessage);
-  //
-  //   // make the new state ( because it needs to include the new message )
-  //   // apparently we can update partial state, so `this.setState({messages: newMessages})` also works
-  //   let newState = {
-  //     ... data,
-  //     messages: newMessages
-  //   };
-  //
-  //   this.socket.send(JSON.stringify(newMessage));
-  //
-  // }
 
   render() {
     return (
