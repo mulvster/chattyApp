@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import MessageList from "./MessageList.jsx";
 import ChatBar from "./ChatBar.jsx";
 
-var uuid = require('uuid');
+const uuid = require('uuid');
 
 
 let data = {
@@ -20,7 +20,7 @@ class App extends Component {
   componentDidMount() {
     this.socket = new WebSocket("ws://localhost:4000");
     this.socket.onopen = () => {
-      this.socket.send(JSON.stringify(data));
+ 
 
       //Set state connected = true
     }
@@ -30,6 +30,7 @@ class App extends Component {
       const data = JSON.parse(message.data);
       const  messages = this.state.messages.concat(data);
       this.setState({messages: messages});
+
     }
   }
 
