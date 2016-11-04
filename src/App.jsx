@@ -77,7 +77,7 @@ class App extends Component {
     return (
       <div className="wrapper">
         <nav>
-          <h1>Chatty</h1>
+          <h1>ChattyKarl</h1>
           <h3>usersOnline={this.state.usersOnline}</h3>
         </nav>
 
