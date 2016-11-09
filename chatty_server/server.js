@@ -1,5 +1,6 @@
 const express = require('express');
 const SocketServer = require('ws').Server;
+const uuid = require('uuid');
 
 
 // Set the port to 4000
@@ -30,19 +31,21 @@ wss.on('connection', (ws) => {
 
   wss.broadcast({
     type: 'userCount',
-      usersOnline: usersOnline
-
-});
+    usersOnline: usersOnline
+  });
 
   ws.on('message', message => {
     const data = JSON.parse(message);
-    wss.broadcast({
-      type: 'chatMessage',
-      data: {
-        text: message
-      }
-    });
-    wss.broadcast(data);
+    switch(data.type)
+    {
+      case "postMessage":
+      case "postNotification":
+        wss.broadcast(Object.assign({}, { id: uuid.v4() }, data)) // Merges data object and { id: uuid } into a new object
+        break;
+      case "colorChange":
+        //
+        break;
+    }
   });
 
 
