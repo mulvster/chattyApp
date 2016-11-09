@@ -2,7 +2,10 @@ import React, {Component} from 'react';
 import MessageList from "./MessageList.jsx";
 import ChatBar from "./ChatBar.jsx";
 
-const uuid = require('uuid');
+// Rules for dealing with `this`:
+// If it's not an event handler, e.g. onClick, onChange, etc...
+// It's likely 99% going to point to the instance of the class
+// If it is inside an event handler - `this` points to originator, so use .bind to deal with it
 
 
 let data = {
@@ -19,26 +22,53 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.socket = new WebSocket("ws://localhost:4000");
+    this.socket = new WebSocket(`ws://${location.hostname}:4000`);
     this.socket.onopen = () => {
 
     }
 
-    this.socket.onmessage = (message) => {
-      console.log(message);
-      const data = JSON.parse(message.data);
-      if(data.type === "userCount") {
-        this.setState({usersOnline: data.usersOnline});
-      } else {
-        data.type = "incoming message";
-
-        const messages = this.state.messages.concat(data);
-        console.log(messages);
-        this.setState({messages: messages});
+    this.socket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      switch(message.type)
+      {
+        case "userCount":
+          this.setState({ usersOnline: message.usersOnline });
+          break;
+        case "postMessage":
+        case "postNotification":
+          this.setState({
+            messages: this.state.messages.concat(message)
+          });
+          break;
       }
 
-
+      // When we call setState the component can choose to re-render if any of the data it uses has changed
+      // https://facebook.github.io/react/docs/react-component.html#shouldcomponentupdate
+      // This method is called and can be overridden in your own components
+      //
+      // Once the component renders - it will cause all child components to render passing them new props
+      // This cascades through the entire hierarchy of the components, top-down
     }
+  }
+
+  changeUser(name)
+  {
+    var prevName = this.state.currentUser.name;
+    this.setState({
+      currentUser: { name }
+    });
+    this.post('postNotification', {
+      content: `User changed name from ${prevName} to: ${name}`
+    });
+  }
+
+  post(type, data)
+  {
+    this.socket.send(
+      JSON.stringify(
+        Object.assign({}, { type }, data)
+      )
+    );
   }
 
 
@@ -46,31 +76,11 @@ class App extends Component {
     this.socket.close();
   }
 
-  addMessage(message) {
-    if (message.user === "") {
-      let newMessage = {
-        id: uuid.v1(),
-        username: this.state.currentUser.name,
-        content: message.message,
-        type: "postMessage"
-      };
-      this.socket.send(JSON.stringify(newMessage));
-
-    } else {
-      let changeNameNotification = {
-        content: "User changed name from " + this.state.currentUser.name + " to: " + message.user,
-        type: "postNotification"
-      }
-      let userMessage = {
-        id: uuid.v1(),
-        username: message.user,
-        content: message.message,
-        type: "postMessage"
-      };
-      this.state.currentUser.name = message.user;
-      this.socket.send(JSON.stringify(changeNameNotification));
-      this.socket.send(JSON.stringify(userMessage));
-    }
+  addMessage(content) {
+    this.post("postMessage", {
+      username: this.state.currentUser.name,
+      content
+    });
   }
 
   render() {
@@ -83,7 +93,7 @@ class App extends Component {
 
         <MessageList
           messages={this.state.messages}/>
-        <ChatBar currentUser={this.state.currentUser} addMessage={this.addMessage.bind(this)}/>
+        <ChatBar currentUser={this.state.currentUser} addMessage={this.addMessage.bind(this)} changeUser={this.changeUser.bind(this)} />
       </div>
     );
   }
