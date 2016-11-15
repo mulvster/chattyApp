@@ -14,13 +14,14 @@ let data = {
   usersOnline: 0
 };
 
-
+// #1: This run first Get props and initial state
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = data;
   }
 
+//Page renders then component didmount runs. This runs third.
   componentDidMount() {
     this.socket = new WebSocket(`ws://${location.hostname}:4000`);
     this.socket.onopen = () => {
@@ -51,6 +52,7 @@ class App extends Component {
     }
   }
 
+  //this function handles changes the user name.
   changeUser(name)
   {
     var prevName = this.state.currentUser.name;
@@ -62,6 +64,8 @@ class App extends Component {
     });
   }
 
+
+  //this handles a users post in the chat serializes the data.
   post(type, data)
   {
     this.socket.send(
@@ -76,6 +80,7 @@ class App extends Component {
     this.socket.close();
   }
 
+  //adds message into chatbar.
   addMessage(content) {
     this.post("postMessage", {
       username: this.state.currentUser.name,
@@ -83,6 +88,8 @@ class App extends Component {
     });
   }
 
+
+  // #2 This runs second after constructor.
   render() {
     return (
       <div className="wrapper">

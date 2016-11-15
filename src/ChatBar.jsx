@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
-
-
+//This page deals with creating and sending the message.
+//#1 runs first
 class ChatBar extends Component {
   constructor(props) {
     super(props);
-    // this.state = {message: "", user: props.currentUser.name};
     this.handleNameChange = this.handleNameChange.bind(this);
     this.handleMessageChange = this.handleMessageChange.bind(this);
 
@@ -23,12 +22,13 @@ class ChatBar extends Component {
     }
   }
 
+  //when bound it will refer to the parent.
   handleNameChange(event) {
     // this.setState({user: event.target.value});
     if(event.key === 'Enter')
       this.props.changeUser(event.target.value);
   }
-
+/// # runs secondly.
   render() {
 
     return (
